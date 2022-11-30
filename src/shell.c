@@ -114,6 +114,24 @@ void my_cd(char *path){
     }
 }
 
+void my_mkdir(char *path){
+    if(mkdir(path, 0777) < 0){
+        perror("rmdir");
+    }
+}
+
+void my_rmdir(char *dir){
+    if(rmdir(dir) < 0){
+        perror("rmdir");
+    }
+}
+
+void my_ln(char *src, char *target){
+    if (link(src, target) <0){
+        perror("link");
+    }
+}
+
 void main() {
     char buf[256];
     char *argv[50];
