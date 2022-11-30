@@ -3,7 +3,7 @@
 /*
 * 2022. 11. 30
 * 동의대학교 컴퓨터소프트웨어공학과
-* 김희진, 
+* 김희진, 윤재혁
 */
 
 #include <stdio.h>
@@ -46,6 +46,33 @@ int getargs(char *cmd, char **argv) {
     return narg;
 }
 
+int checkTaskOption(char *argv){  //실행 인자 포함 여부 확인 / 0=없음, -1 = &, 1 = pipe, 2 = <, 3 = >
+    int opt = 0;
+    if(argv == NULL){
+        return opt;
+    }
+    for(int i=0; argv[i] != NULL; i++){
+        if (argv[i] == '&'){
+            opt = -1;
+            return opt;
+        }
+        if (argv[i] == '|'){
+            opt = 1;
+            return opt;
+        }
+        if (argv[i] == '<'){
+            opt = 2;
+            return opt;
+        }
+        if (argv[i] == '>'){
+            opt = 3;
+            return opt;
+        }
+    }
+    
+    return opt;
+}
+
 void main() {
     char buf[256];
     char *argv[50];
@@ -73,6 +100,17 @@ void main() {
             if(!strcmp(argv[i], "exit")){
                 printf("쉘을 종료합니다../\n");
                 exit(1);
+            }
+            int t_opt = checkTaskOption(argv[i + 1]);    //-1 = &, 1 = pipe, 2 = <, 3 = >
+            if(t_opt == 1){
+                run_pipe(i, argv);
+                i += 2;
+            }
+            else{
+                run(i, t_opt, argv);
+            }
+            if(t_opt > 1){  //it's optional arg
+                i += 2;
             }
         }
     }
