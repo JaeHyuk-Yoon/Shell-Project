@@ -73,6 +73,47 @@ int checkTaskOption(char *argv){  //실행 인자 포함 여부 확인 / 0=없�
     return opt;
 }
 
+void my_ls(){
+    DIR *pdir;
+    struct dirent *pde;
+    int i = 0;
+
+    if ( (pdir = opendir(".")) < 0 ) {
+        perror("opendir");
+        exit(1);
+    }
+    while ((pde = readdir(pdir)) != NULL) {
+        printf("%20s ", pde->d_name);
+        if (++i % 3 == 0)
+            printf("\n");
+    }
+    printf("\n");
+    closedir(pdir);
+}
+
+void my_pwd(){
+    char buf[1024];
+    getcwd(buf, 1024);
+    printf("%s\n", buf);
+}
+
+void pwd_print(){
+    char buf[1024];
+    getcwd(buf, 1024);
+    printf("%s", buf);
+}
+
+void my_cd(char *path){
+    if(chdir(path) < 0){
+        perror("chdir");
+        exit(1);
+    }
+    else{
+        printf("Move to ");
+        my_pwd();
+    }
+}
+
 void main() {
     char buf[256];
     char *argv[50];
