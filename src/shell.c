@@ -17,6 +17,20 @@
 #include <string.h>
 #include <signal.h>
 
+void my_ctrlc(int sig){
+    signal(sig, SIG_IGN);
+    printf("  -> Ctrl_C 가 입력되었습니다. - 쉘 종료\n");
+    exit(1);
+}
+void my_ctrlz(int sig, int flag){
+    signal(sig, SIG_IGN);
+        printf("  -> Ctrl_z 가 입력되었습니다. - 쉘 일시정지\n");
+    printf(" fg 명령으로 재개 가능..\n");
+    raise(SIGSTOP);
+    printf(" 쉘 재개..\n");
+    signal(sig, my_ctrlz);
+}
+
 int getargs(char *cmd, char **argv) {
     int narg = 0;
     while (*cmd) {
@@ -36,6 +50,13 @@ void main() {
     char buf[256];
     char *argv[50];
     int narg;
+    
+    struct sigaction ctrlc_act;
+    struct sigaction ctrlz_act;
+    ctrlc_act.sa_handler = my_ctrlc;
+    ctrlz_act.sa_handler = my_ctrlz;
+    sigaction(SIGINT, &ctrlc_act, NULL);
+    sigaction(SIGTSTP, &ctrlz_act, NULL);
 
     printf("         MYShell을 시작합니다.\n");
     printf("========================================\n");
