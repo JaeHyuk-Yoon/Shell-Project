@@ -46,5 +46,13 @@ void main() {
         gets(buf);
         narg = getargs(buf, argv);  //들어온 인자 갯수
         int t_opt = 0;  //task option
+        
+        for (int i = 0; i < narg; i++) {
+
+            if(!strcmp(argv[i], "exit")){
+                printf("쉘을 종료합니다../\n");
+                exit(1);
+            }
+        }
     }
 }
