@@ -188,6 +188,77 @@ void your_cat(int target){
     }
 }
 
+void run(int i, int t_opt, char **argv){
+    pid_t pid;
+    int fd; /* file descriptor */
+    char *buf[1024];
+    int flags = O_RDWR | O_CREAT;
+    mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH; /* == 0644 */
+    memset(buf, 0, 1024);
+    pid = fork();
+    if (pid == 0){  //child
+        //-1 = &, 1 = pipe, 2 = <, 3 = >
+        if(t_opt == -1){
+            printf("%s가 백그라운드로 실행...\n", argv[i]);
+            selectCmd(i, argv);
+            exit(0);
+        }
+        else if(t_opt == 0){
+            selectCmd(i, argv);
+            exit(0);
+        }
+        else if(t_opt == 2){
+            if ((fd = open(argv[i + 2], flags, mode)) == -1) {
+                perror("open"); /* errno에 대응하는 메시지 출력됨*/
+                exit(1);
+            }
+            if (dup2(fd, STDIN_FILENO) == -1) {
+                perror("dup2"); /* errno에 대응하는 메시지 출력됨 */
+                exit(1);
+            }
+            if (close(fd) == -1) {
+                perror("close"); /* errno에 대응하는 메시지 출력됨*/
+                exit(1);
+            }
+            my_cat(argv[i+2]);
+            selectCmd(i, argv);
+            exit(0);
+        }
+        else if(t_opt == 3){
+            if ((fd = open(argv[i+2], flags, mode)) == -1) {
+                perror("open"); /* errno에 대응하는 메시지 출력됨*/
+                exit(1);
+            }
+            if (dup2(fd, STDOUT_FILENO) == -1) {
+                perror("dup2"); /* errno에 대응하는 메시지 출력됨 */
+                exit(1);
+            }
+            if (close(fd) == -1) {
+                perror("close"); /* errno에 대응하는 메시지 출력됨*/
+                exit(1);
+            }
+            selectCmd(i, argv);
+            exit(0);
+        }
+    }
+    else if (pid > 0){  //parent - 백그라운드 아닐 때만 기다림
+        if(t_opt >= 0){ //백그라운드가 아닐 때
+            wait(pid);
+	    }
+        if(!strcmp(argv[i], "cd")){
+            if(argv[i+1] == NULL){
+                fprintf(stderr, "A few argument..!\n");
+            }
+            else{
+                my_cd(argv[i+1]);
+            }
+        }
+    }
+    else{
+        perror("fork failed");
+    }
+}
+
 void main() {
     char buf[256];
     char *argv[50];
