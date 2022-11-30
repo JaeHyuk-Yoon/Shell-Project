@@ -132,6 +132,62 @@ void my_ln(char *src, char *target){
     }
 }
 
+void my_cp(char *src, char *target){
+    int src_fd; /* source file descriptor */
+    int dst_fd; /* destination file descriptor */
+    char buf[10];
+    ssize_t rcnt; /* read count */
+    mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH; /* == 0644 */
+    if ((src_fd = open(src, O_RDONLY)) == -1 ){
+        perror("src open"); /* errno에 대응하는 메시지 출력됨 */
+        exit(1);
+    }
+    if ( (dst_fd = creat(target, mode)) == -1 ){
+        perror("dst open"); /* errno에 대응하는 메시지 출력됨 */
+        exit(1);
+    }
+    while ( (rcnt = read(src_fd, buf, 10)) > 0){
+        write(dst_fd, buf, rcnt);
+    }
+    if (rcnt < 0) {
+        perror("read");
+        exit(1);
+    }
+    close(src_fd);
+    close(dst_fd);
+}
+
+void my_rm(char *target){
+    remove(target);
+}
+
+void my_mv(char *file, char *path){
+    my_cp(file, path);
+    my_rm(file);
+}
+
+void my_cat(char *target){
+    char buffer[512];
+    int filedes;
+    /* target 을 읽기 전용으로 개방 */
+    if ( (filedes = open (target, O_RDONLY) ) == -1)
+    {
+        printf("error in opening anotherfile\n");
+        exit (1);
+    }
+    /* EOF 까지 반복하라. EOF 는 복귀값 0 에 의해 표시된다 */
+    while (read (filedes, buffer, 512) > 0){
+        printf("%s", buffer);
+    }
+}
+
+void your_cat(int target){
+    char buffer[512];
+    while (read (target, buffer, 512) > 0){
+        printf("%s", buffer);
+    }
+}
+
 void main() {
     char buf[256];
     char *argv[50];
