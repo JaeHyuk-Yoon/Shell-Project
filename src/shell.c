@@ -188,6 +188,77 @@ void your_cat(int target){
     }
 }
 
+void selectCmd(int i, char **argv){
+    //argv 판별해서 맞는 명령 실행
+    if(!strcmp(argv[i], "cat")){
+        if(argv[i+1] == NULL){
+            fprintf(stderr, "A few argument..!\n");
+        }
+        int arg = argv[i + 1][0] - 48;
+        if( arg == 3 ) {
+            your_cat(arg);
+        }
+        else{
+            my_cat(argv[i+1]);
+        }
+    }
+    else if(!strcmp(argv[i], "ls")){
+        my_ls();
+    }
+    else if(!strcmp(argv[i], "pwd")){
+        my_pwd();
+    }
+    else if(!strcmp(argv[i], "mkdir")){
+        if(argv[i+1] == NULL){
+            fprintf(stderr, "A few argument..!\n");
+        }
+        else{
+            my_mkdir(argv[i+1]);
+        }
+    }
+    else if(!strcmp(argv[i], "rmdir")){
+        if(argv[i+1] == NULL){
+            fprintf(stderr, "A few argument..!\n");
+        }
+        else{
+            my_rmdir(argv[i+1]);
+        }
+    }
+    else if(!strcmp(argv[i], "ln")){
+        if(argv[i+1] == NULL || argv[i+2] == NULL){
+            fprintf(stderr, "A few argument..!\n");
+        }
+        else{
+            my_ln(argv[i+1], argv[i+2]);
+        }
+    }
+    else if(!strcmp(argv[i], "cp")){
+        if(argv[i+1] == NULL || argv[i+2] == NULL){
+            fprintf(stderr, "A few argument..!\n");
+        }
+        else{
+            my_cp(argv[i+1], argv[i+2]);
+        }
+    }
+    else if(!strcmp(argv[i], "rm")){
+        if(argv[i+1] == NULL){
+            fprintf(stderr, "A few argument..!\n");
+        }
+        else{
+            my_rm(argv[i+1]);
+        }
+    }
+    else if(!strcmp(argv[i], "mv")){
+        if(argv[i+1] == NULL || argv[i+2] == NULL){
+            fprintf(stderr, "A few argument..!\n");
+        }
+        else{
+            my_mv(argv[i+1], argv[i+2]);
+        }
+    }
+    else{}
+}
+
 void run(int i, int t_opt, char **argv){
     pid_t pid;
     int fd; /* file descriptor */
